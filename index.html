@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobación de Lectura - La insurrección popular de 1944</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1565C0, #0D47A1);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '📚';
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 1.6em;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .header h2 {
+            font-size: 1.1em;
+            font-weight: 400;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .lock-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.75em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .student-info {
+            background: #f8f9fa;
+            padding: 25px 30px;
+            border-bottom: 3px solid #1565C0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .info-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-field label {
+            font-size: 0.8em;
+            font-weight: 700;
+            color: #1565C0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-field input {
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+            background: white;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        .info-field input:focus {
+            outline: none;
+            border-color: #1565C0;
+            box-shadow: 0 0 0 3px rgba(21,101,192,0.15);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, #1565C0, #0D47A1);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 0.88em;
+            margin-bottom: 20px;
+            padding-left: 5px;
+            font-style: italic;
+        }
+
+        .question-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: box-shadow 0.2s;
+        }
+
+        .question-block:hover {
+            box-shadow: 0 4px 15px rgba(21,101,192,0.1);
+        }
+
+        .question-text {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 14px;
+            font-size: 0.95em;
+            line-height: 1.5;
+            display: flex;
+            gap: 8px;
+        }
+
+        .question-number {
+            background: #1565C0;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            font-size: 0.88em;
+            line-height: 1.4;
+        }
+
+        .option-label:hover {
+            border-color: #1565C0;
+            background: #e8f0fe;
+        }
+
+        .option-label input[type="radio"] {
+            accent-color: #1565C0;
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .option-label input[type="radio"]:checked + .option-text {
+            color: #1565C0;
+            font-weight: 600;
+        }
+
+        .option-label:has(input:checked) {
+            border-color: #1565C0;
+            background: #e8f0fe;
+        }
+
+        .option-letter {
+            font-weight: 700;
+            color: #1565C0;
+            min-width: 18px;
+        }
+
+        /* Verdadero o Falso */
+        .tf-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tf-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 12px 16px;
+            transition: box-shadow 0.2s;
+        }
+
+        .tf-item:hover {
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .tf-number {
+            background: #1565C0;
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .tf-statement {
+            flex: 1;
+            font-size: 0.9em;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .tf-buttons {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .tf-btn {
+            padding: 6px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 700;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .tf-btn.v-btn:hover, .tf-btn.v-btn.selected {
+            background: #2e7d32;
+            border-color: #2e7d32;
+            color: white;
+        }
+
+        .tf-btn.f-btn:hover, .tf-btn.f-btn.selected {
+            background: #c62828;
+            border-color: #c62828;
+            color: white;
+        }
+
+        /* Respuesta corta */
+        .short-answer-block {
+            margin-bottom: 18px;
+        }
+
+        .short-question {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            font-size: 0.92em;
+            line-height: 1.5;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .short-answer-block textarea {
+            width: 100%;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-family: inherit;
+            font-size: 0.9em;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.3s;
+            background: #fafafa;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+            line-height: 1.5;
+        }
+
+        .short-answer-block textarea:focus {
+            outline: none;
+            border-color: #1565C0;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(21,101,192,0.12);
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 0.75em;
+            color: #999;
+            margin-top: 3px;
+        }
+
+        /* Botón de envío */
+        .submit-section {
+            padding: 0 30px 30px;
+            text-align: center;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #1565C0, #0D47A1);
+            color: white;
+            border: none;
+            padding: 14px 50px;
+            border-radius: 30px;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(21,101,192,0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(21,101,192,0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .modal h3 {
+            font-size: 1.3em;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .modal p {
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-btn {
+            background: linear-gradient(135deg, #1565C0, #0D47A1);
+            color: white;
+            border: none;
+            padding: 11px 35px;
+            border-radius: 25px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(21,101,192,0.3);
+        }
+
+        /* Warning toast */
+        .warning-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #c62828;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9em;
+            z-index: 9999;
+            transition: transform 0.4s ease;
+            box-shadow: 0 5px 20px rgba(198,40,40,0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Progress */
+        .progress-bar {
+            background: #e9ecef;
+            height: 6px;
+            border-radius: 3px;
+            margin: 15px 30px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #1565C0, #42a5f5);
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .progress-label {
+            text-align: right;
+            font-size: 0.75em;
+            color: #888;
+            padding: 4px 30px 0;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .content {
+                padding: 20px;
+            }
+            .header {
+                padding: 20px;
+            }
+            .header h1 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Warning Toast -->
+<div class="warning-toast" id="warningToast">
+    ⚠️ <span id="warningMsg">Acción no permitida durante la evaluación</span>
+</div>
+
+<!-- Modal de advertencia al intentar salir -->
+<div class="modal-overlay" id="exitModal">
+    <div class="modal">
+        <div class="modal-icon">🚫</div>
+        <h3>¡No puedes salir!</h3>
+        <p>Esta evaluación debe completarse sin interrupciones. Por favor, termina de responder todas las preguntas antes de cerrar o cambiar de ventana.</p>
+        <button class="modal-btn" onclick="closeModal('exitModal')">Entendido, continuar</button>
+    </div>
+</div>
+
+<!-- Modal de envío -->
+<div class="modal-overlay" id="submitModal">
+    <div class="modal">
+        <div class="modal-icon">✅</div>
+        <h3>¡Evaluación enviada!</h3>
+        <p>Tus respuestas han sido registradas correctamente. Espera las instrucciones de tu maestro/a.</p>
+        <button class="modal-btn" onclick="closeModal('submitModal')">Aceptar</button>
+    </div>
+</div>
+
+<!-- Modal de campos vacíos -->
+<div class="modal-overlay" id="incompleteModal">
+    <div class="modal">
+        <div class="modal-icon">⚠️</div>
+        <h3>Evaluación incompleta</h3>
+        <p id="incompleteMsg">Por favor completa todos los campos antes de enviar.</p>
+        <button class="modal-btn" onclick="closeModal('incompleteModal')">Revisar</button>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="lock-badge">🔒 Modo Evaluación</div>
+        <h1>Comprobación de Lectura</h1>
+        <h2>La insurrección popular de 1944 — Mario Payeras</h2>
+    </div>
+
+    <!-- Datos del estudiante -->
+    <div class="student-info">
+        <div class="info-grid">
+            <div class="info-field">
+                <label>📝 Nombre completo</label>
+                <input type="text" id="nombre" placeholder="Escribe tu nombre aquí..." autocomplete="off">
+            </div>
+            <div class="info-field">
+                <label>🎓 Grado</label>
+                <input type="text" id="grado" placeholder="Ej: 3ro Básico" autocomplete="off">
+            </div>
+            <div class="info-field">
+                <label>📅 Fecha</label>
+                <input type="date" id="fecha">
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 de 15 respondidas</div>
+
+    <div class="content">
+
+        <!-- SECCIÓN I: Selección múltiple -->
+        <div class="section">
+            <div class="section-title">
+                <span>📋</span> I. Selección Múltiple
+            </div>
+            <p class="section-subtitle">Marca la respuesta correcta para cada pregunta.</p>
+
+            <!-- Pregunta 1 -->
+            <div class="question-block">
+                <div class="question-text">
+                    <span class="question-number">1</span>
+                    <span>¿Qué ocurrió el 20 de octubre de 1944?</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label">
+                        <input type="radio" name="p1" value="a"> <span class="option-letter">a)</span>
+                        <span class="option-text">Se firmó la independencia de Guatemala</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p1" value="b"> <span class="option-letter">b)</span>
+                        <span class="option-text">Se produjo el desenlace armado de la insurrección popular</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p1" value="c"> <span class="option-letter">c)</span>
+                        <span class="option-text">Terminó la Segunda Guerra Mundial</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p1" value="d"> <span class="option-letter">d)</span>
+                        <span class="option-text">Inició el gobierno de Árbenz</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Pregunta 2 -->
+            <div class="question-block">
+                <div class="question-text">
+                    <span class="question-number">2</span>
+                    <span>¿Contra qué dictador se dirigió principalmente el movimiento popular?</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label">
+                        <input type="radio" name="p2" value="a"> <span class="option-letter">a)</span>
+                        <span class="option-text">Manuel Estrada Cabrera</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p2" value="b"> <span class="option-letter">b)</span>
+                        <span class="option-text">Jacobo Árbenz</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p2" value="c"> <span class="option-letter">c)</span>
+                        <span class="option-text">Jorge Ubico</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p2" value="d"> <span class="option-letter">d)</span>
+                        <span class="option-text">Carlos Castillo Armas</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Pregunta 3 -->
+            <div class="question-block">
+                <div class="question-text">
+                    <span class="question-number">3</span>
+                    <span>¿Qué sectores participaron activamente en el movimiento?</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label">
+                        <input type="radio" name="p3" value="a"> <span class="option-letter">a)</span>
+                        <span class="option-text">Solo militares</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p3" value="b"> <span class="option-letter">b)</span>
+                        <span class="option-text">Solo campesinos</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p3" value="c"> <span class="option-letter">c)</span>
+                        <span class="option-text">Estudiantes, maestros, profesionales y jóvenes oficiales</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p3" value="d"> <span class="option-letter">d)</span>
+                        <span class="option-text">Únicamente empresarios</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Pregunta 4 -->
+            <div class="question-block">
+                <div class="question-text">
+                    <span class="question-number">4</span>
+                    <span>¿Cómo se llamó el documento firmado por ciudadanos prominentes contra la dictadura?</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label">
+                        <input type="radio" name="p4" value="a"> <span class="option-letter">a)</span>
+                        <span class="option-text">Acta de Independencia</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p4" value="b"> <span class="option-letter">b)</span>
+                        <span class="option-text">Memorial de los 311</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p4" value="c"> <span class="option-letter">c)</span>
+                        <span class="option-text">Constitución de 1945</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p4" value="d"> <span class="option-letter">d)</span>
+                        <span class="option-text">Carta Democrática</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Pregunta 5 -->
+            <div class="question-block">
+                <div class="question-text">
+                    <span class="question-number">5</span>
+                    <span>¿Quién fue proclamado candidato presidencial por Renovación Nacional?</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label">
+                        <input type="radio" name="p5" value="a"> <span class="option-letter">a)</span>
+                        <span class="option-text">Federico Ponce Vaides</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p5" value="b"> <span class="option-letter">b)</span>
+                        <span class="option-text">Jorge Ubico</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p5" value="c"> <span class="option-letter">c)</span>
+                        <span class="option-text">Juan José Arévalo</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="p5" value="d"> <span class="option-letter">d)</span>
+                        <span class="option-text">Miguel Ydígoras Fuentes</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN II: Verdadero o Falso -->
+        <div class="section">
+            <div class="section-title">
+                <span>✔️</span> II. Verdadero o Falso
+            </div>
+            <p class="section-subtitle">Selecciona V si es verdadero o F si es falso.</p>
+
+            <div class="tf-grid">
+                <div class="tf-item">
+                    <div class="tf-number">1</div>
+                    <div class="tf-statement">Ubico permitió la libre organización sindical.</div>
+                    <div class="tf-buttons">
+                        <button class="tf-btn v-btn" onclick="selectTF(this, 'tf1', 'V')">V</button>
+                        <button class="tf-btn f-btn" onclick="selectTF(this, 'tf1', 'F')">F</button>
+                    </div>
+                    <input type="hidden" id="tf1" value="">
+                </div>
+
+                <div class="tf-item">
+                    <div class="tf-number">2</div>
+                    <div class="tf-statement">El movimiento popular surgió únicamente dentro del ejército.</div>
+                    <div class="tf-buttons">
+                        <button class="tf-btn v-btn" onclick="selectTF(this, 'tf2', 'V')">V</button>
+                        <button class="tf-btn f-btn" onclick="selectTF(this, 'tf2', 'F')">F</button>
+                    </div>
+                    <input type="hidden" id="tf2" value="">
+                </div>
+
+                <div class="tf-item">
+                    <div class="tf-number">3</div>
+                    <div class="tf-statement">La huelga general ayudó a debilitar el poder de la dictadura.</div>
+                    <div class="tf-buttons">
+                        <button class="tf-btn v-btn" onclick="selectTF(this, 'tf3', 'V')">V</button>
+                        <button class="tf-btn f-btn" onclick="selectTF(this, 'tf3', 'F')">F</button>
+                    </div>
+                    <input type="hidden" id="tf3" value="">
+                </div>
+
+                <div class="tf-item">
+                    <div class="tf-number">4</div>
+                    <div class="tf-statement">La población participó masivamente en manifestaciones contra Ubico.</div>
+                    <div class="tf-buttons">
+                        <button class="tf-btn v-btn" onclick="selectTF(this, 'tf4', 'V')">V</button>
+                        <button class="tf-btn f-btn" onclick="selectTF(this, 'tf4', 'F')">F</button>
+                    </div>
+                    <input type="hidden" id="tf4" value="">
+                </div>
+
+                <div class="tf-item">
+                    <div class="tf-number">5</div>
+                    <div class="tf-statement">La insurrección de 1944 impulsó cambios democráticos en Guatemala.</div>
+                    <div class="tf-buttons">
+                        <button class="tf-btn v-btn" onclick="selectTF(this, 'tf5', 'V')">V</button>
+                        <button class="tf-btn f-btn" onclick="selectTF(this, 'tf5', 'F')">F</button>
+                    </div>
+                    <input type="hidden" id="tf5" value="">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN III: Respuesta corta -->
+        <div class="section">
+            <div class="section-title">
+                <span>✍️</span> III. Respuesta Corta
+            </div>
+            <p class="section-subtitle">Responde con tus propias palabras de forma clara y completa.</p>
+
+            <div class="short-answer-block">
+                <div class="short-question">
+                    <span class="question-number">1</span>
+                    <span>¿Qué factores provocaron el descontento de la población contra el gobierno de Jorge Ubico?</span>
+                </div>
+                <textarea id="rc1" placeholder="Escribe tu respuesta aquí..." maxlength="500" oninput="updateCounter(this, 'c1'); updateProgress()"></textarea>
+                <div class="char-counter"><span id="c1">0</span>/500 caracteres</div>
+            </div>
+
+            <div class="short-answer-block">
+                <div class="short-question">
+                    <span class="question-number">2</span>
+                    <span>¿Por qué fue importante el Memorial de los 311?</span>
+                </div>
+                <textarea id="rc2" placeholder="Escribe tu respuesta aquí..." maxlength="500" oninput="updateCounter(this, 'c2'); updateProgress()"></textarea>
+                <div class="char-
