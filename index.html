@@ -1,133 +1,348 @@
-                <div class="tf-item">
-                    <div class="tf-number">2</div>
-                    <div class="tf-statement">El movimiento popular surgió únicamente dentro del ejército.</div>
-                    <div class="tf-buttons">
-                        <button class="tf-btn v-btn" onclick="selectTF(this,'tf2','V')">V</button>
-                        <button class="tf-btn f-btn" onclick="selectTF(this,'tf2','F')">F</button>
-                    </div>
-                    <input type="hidden" id="tf2" value="">
-                </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comprobación de Lectura - La insurrección popular de 1944</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #263238;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #1565C0, #0D47A1);
+      color: #fff;
+      padding: 32px 24px;
+      text-align: center;
+      position: relative;
+    }
+    .header::before { content: '📚'; display:block; font-size: 42px; margin-bottom: 8px; }
+    .header h1 { font-size: 1.75rem; margin-bottom: 6px; letter-spacing: .5px; }
+    .header h2 { font-size: 1.08rem; font-weight: 400; opacity: .94; font-style: italic; }
+    .lock-badge {
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.25);
+      padding: 5px 12px; border-radius: 20px; font-size: .78rem;
+    }
+    .student-info { background: #f7f9fc; padding: 24px 30px; border-bottom: 3px solid #1565C0; }
+    .info-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 15px; }
+    .info-field { display: flex; flex-direction: column; gap: 6px; }
+    .info-field label { font-size: .78rem; font-weight: 800; color:#1565C0; text-transform: uppercase; }
+    input, textarea { font-family: inherit; }
+    .info-field input {
+      border: 2px solid #dfe5ec; border-radius: 10px; padding: 10px 12px;
+      font-size: .95rem; background: #fff;
+    }
+    .info-field input:focus, textarea:focus { outline: none; border-color: #1565C0; box-shadow: 0 0 0 3px rgba(21,101,192,.12); }
+    .progress-bar { background:#e9ecef; height: 8px; margin: 16px 30px 0; border-radius: 8px; overflow: hidden; }
+    .progress-fill { height:100%; width:0%; background: linear-gradient(90deg, #1565C0, #42A5F5); transition: width .3s ease; }
+    .progress-label { text-align:right; color:#6d7884; font-size:.78rem; padding: 5px 30px 10px; }
+    .content { padding: 30px; }
+    .section { margin-bottom: 34px; }
+    .section-title {
+      background: linear-gradient(135deg, #1565C0, #0D47A1);
+      color:#fff; padding: 13px 18px; border-radius: 12px; font-size: 1.05rem; font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .section-subtitle { color:#65727d; font-size:.9rem; margin-bottom: 18px; font-style: italic; }
+    .section-divider { border:0; border-top: 2px dashed #d8dee6; margin: 10px 0 22px; }
+    .question-block, .short-answer-block {
+      background:#f8fafc; border:1px solid #e4e9ef; border-radius: 14px; padding: 18px; margin-bottom: 15px;
+    }
+    .question-text, .short-question { display:flex; align-items:flex-start; gap: 10px; font-weight: 700; color:#1a1a2e; line-height: 1.45; margin-bottom: 14px; }
+    .question-number, .tf-number {
+      background:#1565C0; color:#fff; width:28px; height:28px; border-radius: 50%; display:flex;
+      align-items:center; justify-content:center; font-size:.82rem; font-weight: 800; flex-shrink:0;
+    }
+    .options-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .option-label {
+      display:flex; gap:10px; align-items:center; padding: 10px 12px; border:2px solid #dfe5ec; border-radius: 10px;
+      cursor:pointer; background:#fff; font-size:.9rem; line-height:1.35;
+    }
+    .option-label:hover, .option-label:has(input:checked) { border-color:#1565C0; background:#e8f0fe; }
+    .option-label input { width: 16px; height: 16px; accent-color:#1565C0; flex-shrink:0; }
+    .option-letter { color:#1565C0; font-weight:800; }
+    .tf-grid { display:flex; flex-direction:column; gap:10px; }
+    .tf-item { display:flex; align-items:center; gap:14px; background:#fff; border:1px solid #e4e9ef; border-radius: 12px; padding: 12px 14px; }
+    .tf-statement { flex:1; font-size:.92rem; line-height:1.4; }
+    .tf-buttons { display:flex; gap:6px; }
+    .tf-btn { border:2px solid #dfe5ec; background:#fff; border-radius: 20px; padding: 7px 16px; font-weight:800; cursor:pointer; }
+    .tf-btn.v-btn.selected { background:#2e7d32; border-color:#2e7d32; color:#fff; }
+    .tf-btn.f-btn.selected { background:#c62828; border-color:#c62828; color:#fff; }
+    textarea { width:100%; min-height: 95px; resize: vertical; border:2px solid #dfe5ec; border-radius: 12px; padding: 12px; font-size:.93rem; line-height:1.55; }
+    .char-counter { text-align:right; color:#7d8790; font-size:.76rem; margin-top: 4px; }
+    .action-buttons { padding: 0 30px 34px; display:flex; justify-content:center; gap: 14px; flex-wrap: wrap; }
+    .btn { border:0; border-radius: 28px; padding: 14px 34px; color:#fff; font-weight:800; font-size:1rem; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow: 0 5px 15px rgba(0,0,0,.18); }
+    .submit-btn { background: linear-gradient(135deg, #1565C0, #0D47A1); }
+    .pdf-btn { background: linear-gradient(135deg, #c62828, #b71c1c); }
+    .print-btn { background: linear-gradient(135deg, #455A64, #263238); }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity:.62; cursor:not-allowed; transform:none; }
+    .pdf-info { text-align:center; color:#7d8790; font-size:.78rem; padding: 0 30px 18px; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.62); z-index:1000; align-items:center; justify-content:center; padding:20px; }
+    .modal-overlay.active { display:flex; }
+    .modal { background:#fff; border-radius:18px; padding: 30px; max-width: 480px; width: 100%; text-align:center; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+    .modal-icon { font-size: 54px; margin-bottom: 12px; }
+    .modal h3 { color:#1a1a2e; margin-bottom: 10px; }
+    .modal p { color:#53616c; line-height:1.55; margin-bottom: 20px; }
+    .modal-btn { background:#1565C0; color:#fff; border:0; border-radius:24px; padding: 11px 28px; font-weight:700; cursor:pointer; }
+    .warning-toast { position:fixed; top:20px; left:50%; transform:translate(-50%,-120px); background:#c62828; color:#fff; padding: 12px 22px; border-radius:30px; font-weight:700; z-index:9999; transition:.3s; box-shadow: 0 8px 24px rgba(198,40,40,.35); }
+    .warning-toast.show { transform:translate(-50%,0); }
+    @media (max-width: 650px) {
+      body { padding: 10px; }
+      .content, .student-info { padding: 18px; }
+      .info-grid, .options-grid { grid-template-columns: 1fr; }
+      .tf-item { align-items:flex-start; flex-wrap:wrap; }
+      .tf-buttons { margin-left: 42px; }
+      .header h1 { font-size:1.3rem; }
+      .lock-badge { position:static; display:inline-block; margin-bottom:10px; }
+      .btn { width:100%; justify-content:center; }
+    }
+    @media print {
+      body { background:#fff; padding:0; }
+      .container { box-shadow:none; border-radius:0; max-width:100%; }
+      .action-buttons, .pdf-info, .warning-toast, .modal-overlay { display:none !important; }
+      .question-block, .short-answer-block { break-inside: avoid; page-break-inside: avoid; }
+      textarea { min-height: 80px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="warning-toast" id="warningToast">⚠️ Acción no permitida durante la evaluación</div>
 
-                <div class="tf-item">
-                    <div class="tf-number">3</div>
-                    <div class="tf-statement">La dictadura de Ubico fue derrocada pacíficamente.</div>
-                    <div class="tf-buttons">
-                        <button class="tf-btn v-btn" onclick="selectTF(this,'tf3','V')">V</button>
-                        <button class="tf-btn f-btn" onclick="selectTF(this,'tf3','F')">F</button>
-                    </div>
-                    <input type="hidden" id="tf3" value="">
-                </div>
+  <div class="modal-overlay" id="submitModal"><div class="modal"><div class="modal-icon">✅</div><h3>¡Evaluación enviada!</h3><p>Tus respuestas han sido registradas visualmente. Ahora puedes descargar o imprimir la evaluación.</p><button class="modal-btn" onclick="closeModal('submitModal')">Aceptar</button></div></div>
+  <div class="modal-overlay" id="incompleteModal"><div class="modal"><div class="modal-icon">⚠️</div><h3>Evaluación incompleta</h3><p id="incompleteMsg">Por favor completa todos los campos antes de enviar.</p><button class="modal-btn" onclick="closeModal('incompleteModal')">Revisar</button></div></div>
+  <div class="modal-overlay" id="pdfModal"><div class="modal"><div class="modal-icon">📄</div><h3>PDF generado</h3><p>Tu evaluación se descargó correctamente.</p><button class="modal-btn" onclick="closeModal('pdfModal')">Aceptar</button></div></div>
+  <div class="modal-overlay" id="pdfBlockModal"><div class="modal"><div class="modal-icon">🔒</div><h3>Primero envía la evaluación</h3><p>Completa y envía la evaluación antes de descargar el PDF.</p><button class="modal-btn" onclick="closeModal('pdfBlockModal')">Entendido</button></div></div>
 
-                <div class="tf-item">
-                    <div class="tf-number">4</div>
-                    <div class="tf-statement">Las mujeres tuvieron un papel activo en la resistencia civil.</div>
-                    <div class="tf-buttons">
-                        <button class="tf-btn v-btn" onclick="selectTF(this,'tf4','V')">V</button>
-                        <button class="tf-btn f-btn" onclick="selectTF(this,'tf4','F')">F</button>
-                    </div>
-                    <input type="hidden" id="tf4" value="">
-                </div>
+  <main class="container" id="mainContainer">
+    <header class="header">
+      <div class="lock-badge">🔒 Modo Evaluación</div>
+      <h1>Comprobación de Lectura</h1>
+      <h2>La insurrección popular de 1944 — Mario Payeras</h2>
+    </header>
 
-                <div class="tf-item">
-                    <div class="tf-number">5</div>
-                    <div class="tf-statement">El 20 de octubre es conocido como el "Día de la Revolución".</div>
-                    <div class="tf-buttons">
-                        <button class="tf-btn v-btn" onclick="selectTF(this,'tf5','V')">V</button>
-                        <button class="tf-btn f-btn" onclick="selectTF(this,'tf5','F')">F</button>
-                    </div>
-                    <input type="hidden" id="tf5" value="">
-                </div>
-            </div>
+    <section class="student-info">
+      <div class="info-grid">
+        <div class="info-field"><label>📝 Nombre completo</label><input type="text" id="nombre" placeholder="Escribe tu nombre aquí..." oninput="updateProgress()"></div>
+        <div class="info-field"><label>🎓 Grado</label><input type="text" id="grado" placeholder="Ej: 3ro Básico" oninput="updateProgress()"></div>
+        <div class="info-field"><label>📅 Fecha</label><input type="date" id="fecha" oninput="updateProgress()"></div>
+      </div>
+    </section>
+
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 de 15 respondidas</div>
+
+    <div class="content">
+      <section class="section">
+        <div class="section-title">📋 I. Selección múltiple</div>
+        <p class="section-subtitle">Marca la respuesta correcta para cada pregunta.</p>
+        <hr class="section-divider">
+
+        <div class="question-block"><div class="question-text"><span class="question-number">1</span><span>¿Qué ocurrió el 20 de octubre de 1944?</span></div><div class="options-grid">
+          <label class="option-label"><input type="radio" name="p1" value="a" onchange="updateProgress()"><span class="option-letter">a)</span><span>Se firmó la independencia de Guatemala</span></label>
+          <label class="option-label"><input type="radio" name="p1" value="b" onchange="updateProgress()"><span class="option-letter">b)</span><span>Se produjo el desenlace armado de la insurrección popular</span></label>
+          <label class="option-label"><input type="radio" name="p1" value="c" onchange="updateProgress()"><span class="option-letter">c)</span><span>Terminó la Segunda Guerra Mundial</span></label>
+          <label class="option-label"><input type="radio" name="p1" value="d" onchange="updateProgress()"><span class="option-letter">d)</span><span>Inició el gobierno de Árbenz</span></label>
+        </div></div>
+
+        <div class="question-block"><div class="question-text"><span class="question-number">2</span><span>¿Contra qué dictador se dirigió principalmente el movimiento popular?</span></div><div class="options-grid">
+          <label class="option-label"><input type="radio" name="p2" value="a" onchange="updateProgress()"><span class="option-letter">a)</span><span>Manuel Estrada Cabrera</span></label>
+          <label class="option-label"><input type="radio" name="p2" value="b" onchange="updateProgress()"><span class="option-letter">b)</span><span>Jacobo Árbenz</span></label>
+          <label class="option-label"><input type="radio" name="p2" value="c" onchange="updateProgress()"><span class="option-letter">c)</span><span>Jorge Ubico</span></label>
+          <label class="option-label"><input type="radio" name="p2" value="d" onchange="updateProgress()"><span class="option-letter">d)</span><span>Carlos Castillo Armas</span></label>
+        </div></div>
+
+        <div class="question-block"><div class="question-text"><span class="question-number">3</span><span>¿Qué sectores participaron activamente en el movimiento?</span></div><div class="options-grid">
+          <label class="option-label"><input type="radio" name="p3" value="a" onchange="updateProgress()"><span class="option-letter">a)</span><span>Solo militares</span></label>
+          <label class="option-label"><input type="radio" name="p3" value="b" onchange="updateProgress()"><span class="option-letter">b)</span><span>Solo campesinos</span></label>
+          <label class="option-label"><input type="radio" name="p3" value="c" onchange="updateProgress()"><span class="option-letter">c)</span><span>Estudiantes, maestros, profesionales y jóvenes oficiales</span></label>
+          <label class="option-label"><input type="radio" name="p3" value="d" onchange="updateProgress()"><span class="option-letter">d)</span><span>Únicamente empresarios</span></label>
+        </div></div>
+
+        <div class="question-block"><div class="question-text"><span class="question-number">4</span><span>¿Cómo se llamó el documento firmado por ciudadanos prominentes contra la dictadura?</span></div><div class="options-grid">
+          <label class="option-label"><input type="radio" name="p4" value="a" onchange="updateProgress()"><span class="option-letter">a)</span><span>Acta de Independencia</span></label>
+          <label class="option-label"><input type="radio" name="p4" value="b" onchange="updateProgress()"><span class="option-letter">b)</span><span>Memorial de los 311</span></label>
+          <label class="option-label"><input type="radio" name="p4" value="c" onchange="updateProgress()"><span class="option-letter">c)</span><span>Constitución de 1945</span></label>
+          <label class="option-label"><input type="radio" name="p4" value="d" onchange="updateProgress()"><span class="option-letter">d)</span><span>Carta Democrática</span></label>
+        </div></div>
+
+        <div class="question-block"><div class="question-text"><span class="question-number">5</span><span>¿Quién fue proclamado candidato presidencial por Renovación Nacional?</span></div><div class="options-grid">
+          <label class="option-label"><input type="radio" name="p5" value="a" onchange="updateProgress()"><span class="option-letter">a)</span><span>Federico Ponce Vaides</span></label>
+          <label class="option-label"><input type="radio" name="p5" value="b" onchange="updateProgress()"><span class="option-letter">b)</span><span>Jorge Ubico</span></label>
+          <label class="option-label"><input type="radio" name="p5" value="c" onchange="updateProgress()"><span class="option-letter">c)</span><span>Juan José Arévalo</span></label>
+          <label class="option-label"><input type="radio" name="p5" value="d" onchange="updateProgress()"><span class="option-letter">d)</span><span>Miguel Ydígoras Fuentes</span></label>
+        </div></div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">✔️ II. Verdadero o falso</div>
+        <p class="section-subtitle">Selecciona V si es verdadero o F si es falso.</p>
+        <hr class="section-divider">
+        <div class="tf-grid">
+          <div class="tf-item"><div class="tf-number">6</div><div class="tf-statement">Ubico permitió la libre organización sindical.</div><div class="tf-buttons"><button class="tf-btn v-btn" onclick="selectTF(this,'tf1','V')">V</button><button class="tf-btn f-btn" onclick="selectTF(this,'tf1','F')">F</button></div><input type="hidden" id="tf1"></div>
+          <div class="tf-item"><div class="tf-number">7</div><div class="tf-statement">El movimiento popular surgió únicamente dentro del ejército.</div><div class="tf-buttons"><button class="tf-btn v-btn" onclick="selectTF(this,'tf2','V')">V</button><button class="tf-btn f-btn" onclick="selectTF(this,'tf2','F')">F</button></div><input type="hidden" id="tf2"></div>
+          <div class="tf-item"><div class="tf-number">8</div><div class="tf-statement">La huelga general ayudó a debilitar el poder de la dictadura.</div><div class="tf-buttons"><button class="tf-btn v-btn" onclick="selectTF(this,'tf3','V')">V</button><button class="tf-btn f-btn" onclick="selectTF(this,'tf3','F')">F</button></div><input type="hidden" id="tf3"></div>
+          <div class="tf-item"><div class="tf-number">9</div><div class="tf-statement">La población participó masivamente en manifestaciones contra Ubico.</div><div class="tf-buttons"><button class="tf-btn v-btn" onclick="selectTF(this,'tf4','V')">V</button><button class="tf-btn f-btn" onclick="selectTF(this,'tf4','F')">F</button></div><input type="hidden" id="tf4"></div>
+          <div class="tf-item"><div class="tf-number">10</div><div class="tf-statement">La insurrección de 1944 impulsó cambios democráticos en Guatemala.</div><div class="tf-buttons"><button class="tf-btn v-btn" onclick="selectTF(this,'tf5','V')">V</button><button class="tf-btn f-btn" onclick="selectTF(this,'tf5','F')">F</button></div><input type="hidden" id="tf5"></div>
         </div>
+      </section>
 
-        <div class="section">
-            <div class="section-title">✍️ &nbsp;III. Respuesta Corta</div>
-            <p class="section-subtitle">Responde brevemente a lo que se te solicita.</p>
-            <hr class="section-divider">
-
-            <div class="short-answer-block">
-                <div class="short-question">
-                    <span>1.</span>
-                    <span>¿Por qué el 20 de octubre es un hito importante para la democracia guatemalteca?</span>
-                </div>
-                <textarea id="sa1" maxlength="300" oninput="updateProgress(); countChars(this)"></textarea>
-                <div class="char-counter" id="count-sa1">0 / 300 caracteres</div>
-            </div>
-
-            <div class="short-answer-block">
-                <div class="short-question">
-                    <span>2.</span>
-                    <span>Menciona un logro social derivado de la Revolución de 1944.</span>
-                </div>
-                <textarea id="sa2" maxlength="300" oninput="updateProgress(); countChars(this)"></textarea>
-                <div class="char-counter" id="count-sa2">0 / 300 caracteres</div>
-            </div>
-        </div>
-
-        <div class="pdf-info">Recuerda: esta evaluación está protegida y monitoreada.</div>
+      <section class="section">
+        <div class="section-title">✍️ III. Respuesta corta</div>
+        <p class="section-subtitle">Responde con tus propias palabras de forma clara y completa.</p>
+        <hr class="section-divider">
+        <div class="short-answer-block"><div class="short-question"><span class="question-number">11</span><span>¿Qué factores provocaron el descontento de la población contra el gobierno de Jorge Ubico?</span></div><textarea id="rc1" maxlength="600" placeholder="Escribe tu respuesta aquí..." oninput="updateCounter(this,'c1'); updateProgress()"></textarea><div class="char-counter"><span id="c1">0</span>/600 caracteres</div></div>
+        <div class="short-answer-block"><div class="short-question"><span class="question-number">12</span><span>¿Por qué fue importante el Memorial de los 311?</span></div><textarea id="rc2" maxlength="600" placeholder="Escribe tu respuesta aquí..." oninput="updateCounter(this,'c2'); updateProgress()"></textarea><div class="char-counter"><span id="c2">0</span>/600 caracteres</div></div>
+        <div class="short-answer-block"><div class="short-question"><span class="question-number">13</span><span>Menciona dos grupos sociales que participaron en la lucha contra la dictadura.</span></div><textarea id="rc3" maxlength="600" placeholder="Escribe tu respuesta aquí..." oninput="updateCounter(this,'c3'); updateProgress()"></textarea><div class="char-counter"><span id="c3">0</span>/600 caracteres</div></div>
+        <div class="short-answer-block"><div class="short-question"><span class="question-number">14</span><span>¿Qué significado tuvo la Revolución de Octubre para Guatemala?</span></div><textarea id="rc4" maxlength="600" placeholder="Escribe tu respuesta aquí..." oninput="updateCounter(this,'c4'); updateProgress()"></textarea><div class="char-counter"><span id="c4">0</span>/600 caracteres</div></div>
+        <div class="short-answer-block"><div class="short-question"><span class="question-number">15</span><span>¿Cuál consideras que fue el principal logro de la insurrección popular de 1944? Explica brevemente.</span></div><textarea id="rc5" maxlength="600" placeholder="Escribe tu respuesta aquí..." oninput="updateCounter(this,'c5'); updateProgress()"></textarea><div class="char-counter"><span id="c5">0</span>/600 caracteres</div></div>
+      </section>
     </div>
 
-    <div class="action-buttons">
-        <button class="submit-btn" id="submitBtn" onclick="submitTest()">Enviar Evaluación</button>
-        <button class="pdf-btn" id="pdfBtn" onclick="generatePDF()" disabled>
-            <div class="spinner" id="spinner"></div>
-            Descargar PDF
-        </button>
+    <div class="action-buttons" id="actionButtons">
+      <button class="btn submit-btn" onclick="submitEvaluation()">✅ Enviar evaluación</button>
+      <button class="btn pdf-btn" id="pdfBtn" onclick="downloadPDF()">📄 Descargar PDF</button>
+      <button class="btn print-btn" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
     </div>
-</div>
+    <div class="pdf-info">Puedes usar “Imprimir / Guardar PDF” si el botón de descarga no funciona en tu navegador.</div>
+  </main>
 
-<script>
-    // Lógica para botones V/F
-    function selectTF(btn, id, value) {
-        const parent = btn.parentElement;
-        parent.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        document.getElementById(id).value = value;
-        updateProgress();
-    }
+  <script>
+    const TOTAL = 15;
+    let submitted = false;
 
-    // Contador de caracteres
-    function countChars(el) {
-        document.getElementById('count-' + el.id).innerText = el.value.length + " / 300 caracteres";
-    }
-
-    // Lógica de progreso (15 items en total)
-    function updateProgress() {
-        let count = 0;
-        // Check radios (5)
-        for(let i=1; i<=5; i++) if(document.querySelector(`input[name="p${i}"]:checked`)) count++;
-        // Check TF (5)
-        for(let i=1; i<=5; i++) if(document.getElementById(`tf${i}`).value !== "") count++;
-        // Check Textareas (2)
-        if(document.getElementById('sa1').value.trim() !== "") count++;
-        if(document.getElementById('sa2').value.trim() !== "") count++;
-
-        const percent = (count / 12) * 100; // 12 items totales
-        document.getElementById('progressFill').style.width = percent + "%";
-        document.getElementById('progressLabel').innerText = count + " de 12 respondidas";
-    }
-
-    // Funciones de navegación y modales
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-    
-    function submitTest() {
-        // Validación simple
-        document.getElementById('submitModal').classList.add('active');
-        document.getElementById('pdfBtn').disabled = false;
+    function showModal(id) { document.getElementById(id).classList.add('active'); }
+
+    function updateCounter(textarea, counterId) {
+      document.getElementById(counterId).textContent = textarea.value.length;
     }
 
-    function generatePDF() {
-        // Implementación de jsPDF simplificada
-        const element = document.getElementById('mainContainer');
-        html2canvas(element).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
-            pdf.save("Evaluacion_1944.pdf");
-            document.getElementById('pdfModal').classList.add('active');
-        });
+    function selectTF(btn, hiddenId, value) {
+      const item = btn.closest('.tf-item');
+      item.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById(hiddenId).value = value;
+      updateProgress();
     }
-</script>
+
+    function countAnswered() {
+      let count = 0;
+      for (let i = 1; i <= 5; i++) {
+        if (document.querySelector(`input[name="p${i}"]:checked`)) count++;
+      }
+      for (let i = 1; i <= 5; i++) {
+        if (document.getElementById(`tf${i}`).value) count++;
+      }
+      for (let i = 1; i <= 5; i++) {
+        if (document.getElementById(`rc${i}`).value.trim().length > 0) count++;
+      }
+      return count;
+    }
+
+    function updateProgress() {
+      const answered = countAnswered();
+      const pct = Math.round((answered / TOTAL) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressLabel').textContent = `${answered} de ${TOTAL} respondidas`;
+    }
+
+    function validateAll() {
+      const missing = [];
+      if (!document.getElementById('nombre').value.trim()) missing.push('nombre');
+      if (!document.getElementById('grado').value.trim()) missing.push('grado');
+      if (!document.getElementById('fecha').value) missing.push('fecha');
+      for (let i = 1; i <= 5; i++) if (!document.querySelector(`input[name="p${i}"]:checked`)) missing.push(`pregunta ${i}`);
+      for (let i = 1; i <= 5; i++) if (!document.getElementById(`tf${i}`).value) missing.push(`verdadero/falso ${i}`);
+      for (let i = 1; i <= 5; i++) if (!document.getElementById(`rc${i}`).value.trim()) missing.push(`respuesta corta ${i}`);
+      return missing;
+    }
+
+    function submitEvaluation() {
+      const missing = validateAll();
+      if (missing.length) {
+        document.getElementById('incompleteMsg').textContent = 'Faltan campos por completar: ' + missing.slice(0, 5).join(', ') + (missing.length > 5 ? '...' : '');
+        showModal('incompleteModal');
+        return;
+      }
+      submitted = true;
+      showModal('submitModal');
+    }
+
+    function makeFilename() {
+      const nombre = document.getElementById('nombre').value.trim() || 'estudiante';
+      return 'comprobacion_1944_' + nombre.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_-]+/g, '_') + '.pdf';
+    }
+
+    async function downloadPDF() {
+      if (!submitted) {
+        showModal('pdfBlockModal');
+        return;
+      }
+      if (!window.jspdf || !window.html2canvas) {
+        window.print();
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const container = document.getElementById('mainContainer');
+      const buttons = document.getElementById('actionButtons');
+      buttons.style.display = 'none';
+
+      try {
+        const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'letter');
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const margin = 8;
+        const imgW = pageW - margin * 2;
+        const imgH = canvas.height * imgW / canvas.width;
+        let heightLeft = imgH;
+        let y = margin;
+
+        pdf.addImage(imgData, 'PNG', margin, y, imgW, imgH);
+        heightLeft -= (pageH - margin * 2);
+        while (heightLeft > 0) {
+          pdf.addPage();
+          y = margin - (imgH - heightLeft);
+          pdf.addImage(imgData, 'PNG', margin, y, imgW, imgH);
+          heightLeft -= (pageH - margin * 2);
+        }
+        pdf.save(makeFilename());
+        showModal('pdfModal');
+      } catch (err) {
+        console.error(err);
+        alert('No se pudo generar el PDF. Usa el botón Imprimir / Guardar PDF.');
+      } finally {
+        buttons.style.display = 'flex';
+      }
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && ['s', 'p'].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+        document.getElementById('warningToast').classList.add('show');
+        setTimeout(() => document.getElementById('warningToast').classList.remove('show'), 1800);
+      }
+    });
+
+    window.addEventListener('load', updateProgress);
+  </script>
 </body>
 </html>
