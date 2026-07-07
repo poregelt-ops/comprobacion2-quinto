@@ -607,4 +607,170 @@
         <div class="modal-icon">⚠️</div>
         <h3>Evaluación incompleta</h3>
         <p id="incompleteMsg">Por favor completa todos los campos antes de enviar.</p>
-        <button class="modal-btn"
+        <button class="modal-btn" onclick="closeModal('incompleteModal')">Revisar</button>
+    </div>
+</div>
+
+<!-- ── Modal: PDF exitoso ── -->
+<div class="modal-overlay" id="pdfModal">
+    <div class="modal">
+        <div class="modal-icon">📄</div>
+        <h3>¡PDF generado!</h3>
+        <p>Tu evaluación ha sido descargada correctamente como archivo PDF.</p>
+        <button class="modal-btn" onclick="closeModal('pdfModal')">Aceptar</button>
+    </div>
+</div>
+
+<!-- ── Modal: PDF bloqueado ── -->
+<div class="modal-overlay" id="pdfBlockModal">
+    <div class="modal">
+        <div class="modal-icon">🔒</div>
+        <h3>Acción no permitida</h3>
+        <p>Debes <strong>enviar la evaluación</strong> primero antes de poder descargar el PDF.</p>
+        <button class="modal-btn" onclick="closeModal('pdfBlockModal')">Entendido</button>
+    </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     CONTENEDOR PRINCIPAL
+════════════════════════════════════════ -->
+<div class="container" id="mainContainer">
+
+    <!-- Encabezado -->
+    <div class="header">
+        <div class="lock-badge">🔒 Modo Evaluación</div>
+        <h1>Comprobación de Lectura</h1>
+        <h2>La insurrección popular de 1944 — Mario Payeras</h2>
+    </div>
+
+    <!-- Datos del estudiante -->
+    <div class="student-info">
+        <div class="info-grid">
+            <div class="info-field">
+                <label>📝 Nombre completo</label>
+                <input type="text" id="nombre" placeholder="Escribe tu nombre aquí..." autocomplete="off">
+            </div>
+            <div class="info-field">
+                <label>🎓 Grado</label>
+                <input type="text" id="grado" placeholder="Ej: 3ro Básico" autocomplete="off">
+            </div>
+            <div class="info-field">
+                <label>📅 Fecha</label>
+                <input type="date" id="fecha">
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 de 15 respondidas</div>
+
+    <!-- ─── CONTENIDO ─── -->
+    <div class="content">
+
+        <!-- ══════════════════════════════════
+             SECCIÓN I — Selección múltiple
+        ══════════════════════════════════ -->
+        <div class="section">
+            <div class="section-title">📋 &nbsp;I. Selección Múltiple</div>
+            <p class="section-subtitle">Marca la respuesta correcta para cada pregunta.</p>
+            <hr class="section-divider">
+
+            <!-- P1 -->
+            <div class="question-block">
+                <div class="question-text">
+                    <span class="question-number">1</span>
+                    <span>¿Qué ocurrió el 20 de octubre de 1944?</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="p1" value="a" onchange="updateProgress()"> <span class="option-letter">a)</span><span>Se firmó la independencia de Guatemala</span></label>
+                    <label class="option-label"><input type="radio" name="p1" value="b" onchange="updateProgress()"> <span class="option-letter">b)</span><span>Se produjo el desenlace armado de la insurrección popular</span></label>
+                    <label class="option-label"><input type="radio" name="p1" value="c" onchange="updateProgress()"> <span class="option-letter">c)</span><span>Terminó la Segunda Guerra Mundial</span></label>
+                    <label class="option-label"><input type="radio" name="p1" value="d" onchange="updateProgress()"> <span class="option-letter">d)</span><span>Inició el gobierno de Árbenz</span></label>
+                </div>
+            </div>
+
+            <!-- P2 -->
+            <div class="question-block">
+                <div class="question-text">
+                    <span class="question-number">2</span>
+                    <span>¿Contra qué dictador se dirigió principalmente el movimiento popular?</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="p2" value="a" onchange="updateProgress()"> <span class="option-letter">a)</span><span>Manuel Estrada Cabrera</span></label>
+                    <label class="option-label"><input type="radio" name="p2" value="b" onchange="updateProgress()"> <span class="option-letter">b)</span><span>Jacobo Árbenz</span></label>
+                    <label class="option-label"><input type="radio" name="p2" value="c" onchange="updateProgress()"> <span class="option-letter">c)</span><span>Jorge Ubico</span></label>
+                    <label class="option-label"><input type="radio" name="p2" value="d" onchange="updateProgress()"> <span class="option-letter">d)</span><span>Carlos Castillo Armas</span></label>
+                </div>
+            </div>
+
+            <!-- P3 -->
+            <div class="question-block">
+                <div class="question-text">
+                    <span class="question-number">3</span>
+                    <span>¿Qué sectores participaron activamente en el movimiento?</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="p3" value="a" onchange="updateProgress()"> <span class="option-letter">a)</span><span>Solo militares</span></label>
+                    <label class="option-label"><input type="radio" name="p3" value="b" onchange="updateProgress()"> <span class="option-letter">b)</span><span>Solo campesinos</span></label>
+                    <label class="option-label"><input type="radio" name="p3" value="c" onchange="updateProgress()"> <span class="option-letter">c)</span><span>Estudiantes, maestros, profesionales y jóvenes oficiales</span></label>
+                    <label class="option-label"><input type="radio" name="p3" value="d" onchange="updateProgress()"> <span class="option-letter">d)</span><span>Únicamente empresarios</span></label>
+                </div>
+            </div>
+
+            <!-- P4 -->
+            <div class="question-block">
+                <div class="question-text">
+                    <span class="question-number">4</span>
+                    <span>¿Cómo se llamó el documento firmado por ciudadanos prominentes contra la dictadura?</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="p4" value="a" onchange="updateProgress()"> <span class="option-letter">a)</span><span>Acta de Independencia</span></label>
+                    <label class="option-label"><input type="radio" name="p4" value="b" onchange="updateProgress()"> <span class="option-letter">b)</span><span>Memorial de los 311</span></label>
+                    <label class="option-label"><input type="radio" name="p4" value="c" onchange="updateProgress()"> <span class="option-letter">c)</span><span>Constitución de 1945</span></label>
+                    <label class="option-label"><input type="radio" name="p4" value="d" onchange="updateProgress()"> <span class="option-letter">d)</span><span>Carta Democrática</span></label>
+                </div>
+            </div>
+
+            <!-- P5 -->
+            <div class="question-block">
+                <div class="question-text">
+                    <span class="question-number">5</span>
+                    <span>¿Quién fue proclamado candidato presidencial por Renovación Nacional?</span>
+                </div>
+                <div class="options-grid">
+                    <label class="option-label"><input type="radio" name="p5" value="a" onchange="updateProgress()"> <span class="option-letter">a)</span><span>Federico Ponce Vaides</span></label>
+                    <label class="option-label"><input type="radio" name="p5" value="b" onchange="updateProgress()"> <span class="option-letter">b)</span><span>Jorge Ubico</span></label>
+                    <label class="option-label"><input type="radio" name="p5" value="c" onchange="updateProgress()"> <span class="option-letter">c)</span><span>Juan José Arévalo</span></label>
+                    <label class="option-label"><input type="radio" name="p5" value="d" onchange="updateProgress()"> <span class="option-letter">d)</span><span>Miguel Ydígoras Fuentes</span></label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+             SECCIÓN II — Verdadero o Falso
+        ══════════════════════════════════ -->
+        <div class="section">
+            <div class="section-title">✔️ &nbsp;II. Verdadero o Falso</div>
+            <p class="section-subtitle">Selecciona V si es verdadero o F si es falso.</p>
+            <hr class="section-divider">
+
+            <div class="tf-grid">
+                <div class="tf-item">
+                    <div class="tf-number">1</div>
+                    <div class="tf-statement">Ubico permitió la libre organización sindical.</div>
+                    <div class="tf-buttons">
+                        <button class="tf-btn v-btn" onclick="selectTF(this,'tf1','V')">V</button>
+                        <button class="tf-btn f-btn" onclick="selectTF(this,'tf1','F')">F</button>
+                    </div>
+                    <input type="hidden" id="tf1" value="">
+                </div>
+
+                <div class="tf-item">
+                    <div class="tf-number">2</div>
+                    <div class="tf-statement">El movimiento popular surgió únicamente dentro del ejército.</div>
+                    <div class="tf-buttons">
+                        <button class="tf-btn v-btn" onclick="selectTF(this,'tf2','V')">V</button>
+                        <button class="tf-btn f-btn" onclick="select
